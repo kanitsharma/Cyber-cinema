@@ -12,7 +12,7 @@ import Drawernav from './drawernav.js'
 import Toolbar from '../toolbar/toolbar.js'
 import Body from '../body/body.js'
 
-export default class ain extends Component {
+export default class Main extends Component {
   render(){
     return(
       <DrawerLayoutAndroid
