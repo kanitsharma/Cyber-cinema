@@ -6,15 +6,19 @@ import {
   ListView,
   TouchableNativeFeedback,
   Image,
+  AppRegistry,
+  RefreshControl,
 
 } from 'react-native';
-
+import {StackNavigator} from 'react-navigation';
+import Movieex from './movieexpand.js'
 export default class Body extends Component {
   constructor(props){
     super(props);
       this.state = {
       movielist : [],
       apidata : {},
+      refreshing : true,
     }
   }
 
@@ -25,6 +29,7 @@ export default class Body extends Component {
 
 
   componentWillMount(){
+    this.setState({ refreshing : true });
     this.getdata();
   }
 
@@ -41,6 +46,7 @@ export default class Body extends Component {
           movielist.push(obj.original_title);
         });
         this.setState( { movielist : movielist } );
+        this.setState({ refreshing : false });
       })
     .catch((error) => {
        console.error(error);
@@ -48,7 +54,10 @@ export default class Body extends Component {
   }
 
 
-
+  _onRefresh() {
+   this.setState({refreshing: true});
+   this.getdata();
+ }
   render(){
 
     const ds = new ListView.DataSource({
@@ -60,6 +69,12 @@ export default class Body extends Component {
 
       <View style = {styles.bodyview} >
         <ListView
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this._onRefresh.bind(this)}
+            />
+          }
           style = {styles.listview}
           dataSource={ds.cloneWithRows(this.state.movielist)}
           renderRow={(rowData,rowID,sectionID,highlightRow) => (
@@ -132,3 +147,9 @@ const styles = StyleSheet.create({
   },
 
 });
+
+const SimpleApp = StackNavigator({
+  Home: { screen: Body },
+});
+
+AppRegistry.registerComponent('SimpleApp', () => SimpleApp);

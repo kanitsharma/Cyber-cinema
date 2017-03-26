@@ -6,13 +6,13 @@ import {
   View,
   DrawerLayoutAndroid,
   StatusBar,
-
-} from 'react-native';
+  } from 'react-native';
 import Drawernav from './drawernav.js'
 import Toolbar from '../toolbar/toolbar.js'
 import Body from '../body/body.js'
+import Navigatord from '../navigator/navigator.js'
 
-export default class ain extends Component {
+export default class Main extends Component {
   render(){
     return(
       <DrawerLayoutAndroid
@@ -23,11 +23,6 @@ export default class ain extends Component {
         )}
         statusBarBackgroundColor = "#5D707F"
         >
-
-        <StatusBar
-          barStyle="light-content"
-        />
-
         <Toolbar />
         <Body />
 

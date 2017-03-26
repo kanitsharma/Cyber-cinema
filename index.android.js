@@ -1,22 +1,14 @@
 import React, { Component } from 'react';
 import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View
+  AppRegistry
 } from 'react-native';
-import Main from './components/main/main.js'
-
+import Movie from './components/main/main.js'
+import Movieex from './components/body/movieexpand.js'
 export default class movienerd_alpha extends Component {
   render() {
     return (
-      <Main />
+        <Movie />
     );
   }
 }
-
-const styles = StyleSheet.create({
-
-});
-
 AppRegistry.registerComponent('movienerd_alpha', () => movienerd_alpha);
