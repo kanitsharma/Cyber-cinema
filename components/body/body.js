@@ -6,30 +6,28 @@ import {
   ListView,
   TouchableNativeFeedback,
   Image,
-  AppRegistry,
-  RefreshControl,
+  ActivityIndicator,
 
 } from 'react-native';
 import {StackNavigator} from 'react-navigation';
-import Movieex from './movieexpand.js'
 export default class Body extends Component {
   constructor(props){
     super(props);
       this.state = {
       movielist : [],
       apidata : {},
-      refreshing : true,
+      animating : true ,
+      height : 50,
     }
   }
 
 
-  pressRow(rowData , rowID,sectionID){
-
+  _pressRow(rowData , rowID,sectionID){
+      this.props.navigator.navigate('Movie' , { name : this.state.movielist[sectionID] , data :  this.state.apidata , id : sectionID });
   }
 
 
   componentWillMount(){
-    this.setState({ refreshing : true });
     this.getdata();
   }
 
@@ -46,18 +44,16 @@ export default class Body extends Component {
           movielist.push(obj.original_title);
         });
         this.setState( { movielist : movielist } );
-        this.setState({ refreshing : false });
-      })
+      }).then( () => {
+        setTimeout( () => this.setState({ animating : false , height : 0 }) ,1000)
+      } )
     .catch((error) => {
        console.error(error);
      });
   }
 
 
-  _onRefresh() {
-   this.setState({refreshing: true});
-   this.getdata();
- }
+
   render(){
 
     const ds = new ListView.DataSource({
@@ -68,33 +64,37 @@ export default class Body extends Component {
     return (
 
       <View style = {styles.bodyview} >
+      <ActivityIndicator
+        animating = {this.state.animating}
+        color = '#E91E63'
+        size= 'large'
+        hidesWhenStopped = {true}
+        style = {{ height : this.state.height , backgroundColor : 'white' }}
+      />
         <ListView
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh.bind(this)}
-            />
-          }
           style = {styles.listview}
           dataSource={ds.cloneWithRows(this.state.movielist)}
           renderRow={(rowData,rowID,sectionID,highlightRow) => (
             <View style = {styles.card}>
               <TouchableNativeFeedback
-                onPress={() => this.pressRow(rowData,rowID,sectionID)}
-                background={TouchableNativeFeedback.Ripple('#5D707F')}
+                onPress={() => this._pressRow(rowData,rowID,sectionID)}
+                background={TouchableNativeFeedback.Ripple('#227585')}
                 >
                 <View style = {styles.row}
-                  elevation = {20}>
+                  elevation = {15}>
                     <Image style={{width: 180, height: 250}} source = {{uri : imgbaseurl + this.state.apidata.results[sectionID].poster_path}}>
                     </Image>
                   <View style = {styles.textwrap}>
                     <Text style = {styles.rowtext} >{rowData}
                     </Text>
-                    <View style = {styles.textwrap2}>
+                    <View>
                       <Text style = {styles.rowtext2}
                         ellipsizeMode = 'tail'
-                        numberOfLines = {9}>
-                        OverView : { this.state.apidata.results[sectionID].overview}
+                        numberOfLines = {5}>
+                        { this.state.apidata.results[sectionID].overview}
+                      </Text>
+                    </View>
+                    <View style = {styles.view3}><Text style = {styles.rowtext3} > VIEW NOW
                       </Text>
                     </View>
                   </View>
@@ -111,45 +111,45 @@ export default class Body extends Component {
 const styles = StyleSheet.create({
 
   card : {
-    padding :20,
+    padding :8,
+    paddingTop : 10,
   },
 
   bodyview : {
-    backgroundColor : '#ccc',
-    marginBottom : 50,
+    backgroundColor : '#FFFFFF',
   },
 
   row : {
-    backgroundColor : '#E8E8EE',
+    backgroundColor : '#2D566B',
     flexDirection : 'row',
+    borderRadius : 5,
   },
   rowtext : {
-    fontSize : 15,
-    color : 'black',
-    margin : 10,
-    borderBottomWidth : 1,
-    borderBottomColor : 'black',
+    padding :3,
+    fontSize : 17,
+    color : '#FFFFFF',
+
   },
   textwrap : {
-    maxWidth : 150,
-    maxHeight : 200,
+    flex : 1,
     flexDirection : 'column',
+    padding : 15,
   },
-  textwrap2 : {
-    marginLeft : 10,
+  rowtext2 : {
+    fontSize : 12,
+    padding : 3,
+    color : '#FFFFFF',
+    lineHeight : 24,
+  },
 
+  rowtext3 : {
+    paddingTop : 15,
+    color : '#FFFFFF',
   },
-  headerview : {
-    backgroundColor : '#6D8A96',
-    alignItems : 'center',
-    padding : 20,
 
-  },
+  view3 : {
+    alignItems : 'flex-start',
+    justifyContent : 'flex-end'
+  }
 
 });
-
-const SimpleApp = StackNavigator({
-  Home: { screen: Body },
-});
-
-AppRegistry.registerComponent('SimpleApp', () => SimpleApp);
